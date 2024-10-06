@@ -1,8 +1,7 @@
 from mips.machine import Machine
 from mips.register import Register
+from mips.stack import Stack
 
 
 def main():
-    r = Register("name")
-    r.dispatch("set", "value1")
-    print(r.dispatch("get"))
+    machine = Machine()

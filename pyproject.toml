@@ -1,0 +1,33 @@
+[project]
+name = "mips"
+version = "0.1"
+# description = ""
+# readme = ""
+# requires-python = ">=3.8"
+# license = {file = "LICENSE.txt"}
+# keywords = []
+# authors = [
+#   {email = ""},
+#   {name = ""}
+# ]
+
+# dependencies = [
+  # "numpy",
+  # "pycuda",
+  # "toml"
+# ]
+
+# [project.optional-dependencies]
+# test = [
+#   "pytest < 5.0.0",
+#   "pytest-cov[all]"
+# ]
+
+# [project.urls]
+# homepage = "https://example.com"
+# documentation = "https://readthedocs.org"
+# repository = "https://github.com"
+# changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+
+[project.scripts]
+main = "mips:main"

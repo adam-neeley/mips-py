@@ -18,11 +18,17 @@ class Procedure:
     def type(self):
         return type(self).__name__
 
+    def __repr__(self):
+        return self.type
+
 
 @dataclass
 class Label(Procedure):
     Pattern = r"\w+(?=:)"
     name: str
+
+    def __repr__(self):
+        return self.name
 
 
 @dataclass
@@ -30,8 +36,13 @@ class Instruction(Procedure):
     Pattern = r"\s*(\w|\s)+"
     expr: str
 
+    def __repr__(self):
+        return self.expr
+
 
 @dataclass
 class Blank(Procedure):
     Pattern = r".*"
-    pass
+
+    def __repr__(self):
+        return ""

@@ -11,11 +11,9 @@ version = "0.1"
 #   {name = ""}
 # ]
 
-# dependencies = [
-  # "numpy",
-  # "pycuda",
-  # "toml"
-# ]
+dependencies = [
+  "tabulate"
+]
 
 # [project.optional-dependencies]
 # test = [

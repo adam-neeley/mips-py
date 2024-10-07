@@ -4,7 +4,7 @@ class Register:
     def __init__(self, name):
         "Initialize name and contents of register."
         self.__name = name
-        self.__contents = None
+        self.__contents = 0
 
     @property
     def name(self):

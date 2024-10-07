@@ -3,6 +3,7 @@ import re
 from mips.stack import Stack
 from mips.register import Register
 from mips.procedure import *
+from mips.console import console
 
 
 class Machine:
@@ -32,13 +33,17 @@ class Machine:
         "sp",
     ]
 
+    @property
+    def registers(self):
+        return self.__registers
+
     def init_registers(self):
-        self.registers = {}
+        self.__registers = []
         for name in Machine.RegisterNames:
             self.add_register(name)
 
     def add_register(self, register_name):
-        self.registers[register_name] = Register(register_name)
+        self.__registers.append(Register(register_name))
 
     """Operators"""
 
@@ -55,6 +60,7 @@ class Machine:
         self.__processes = []
 
     def add_process(self, proc):
+        proc.line = len(self.__processes)
         self.__processes.append(proc)
 
     def add_instruction(self, text):
@@ -70,8 +76,6 @@ class Machine:
 
     def assemble(self, controller_text):
         self.parse(controller_text)
-        for i, proc in enumerate(self.__processes):
-            print(i, proc)
 
     def parse(self, text):
         lines = text.split("\n")
@@ -95,14 +99,22 @@ class Machine:
     """Running"""
 
     def start(self):
-        self.registers["pc"].contents = self.instruction_sequence
+        self.__registers["pc"].contents = self.instruction_sequence
         self.execute()
 
     def execute(self):
-        instructions = self.registers["pc"].contents
+        instructions = self.__registers["pc"].contents
         if instructions == None:
             print("done")
 
     def install_instruction_sequence(self):
-        self.registers["pc"].contents = self.instruction_sequence
+        self.__registers["pc"].contents = self.instruction_sequence
         self.execute()
+
+    def __repr__(self):
+        console.log("Machine")
+        console.log("Registers")
+        console.table([[i, r.name, r.contents] for i, r in enumerate(self.registers)])
+        console.log("Procedures")
+        console.table([[l, p.type, p] for l, p in enumerate(self.processes)])
+        return ""

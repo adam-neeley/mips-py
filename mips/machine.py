@@ -2,17 +2,17 @@ import re
 
 from mips.stack import Stack
 from mips.register import Register
-from mips.instruction import Instruction
+from mips.procedure import *
 
 
 class Machine:
     "Class to represent a machine."
 
-    def __init__(self, controller_text=""):
+    def __init__(self):
         self.init_stack()
         self.init_registers()
-        self.init_operations()
-        self.controller_text = controller_text
+        self.init_operators()
+        self.init_processes()
 
     """Stack"""
 
@@ -35,49 +35,62 @@ class Machine:
     def init_registers(self):
         self.registers = {}
         for name in Machine.RegisterNames:
-            self.allocate_register(name)
+            self.add_register(name)
 
-    def allocate_register(self, register_name):
-        self.register[register_name] = Register(register_name)
+    def add_register(self, register_name):
+        self.registers[register_name] = Register(register_name)
 
     """Operators"""
 
     def init_operators(self):
         self.operators = []
 
-    """Instructions"""
+    """Processes"""
 
-    def install_operations(self, operations):
-        self.dispatch("install_operations")(operations)
+    @property
+    def processes(self):
+        return self.__processes
 
-    """Labels"""
+    def init_processes(self):
+        self.__processes = []
 
-    def init_labels(self):
-        self.labels = {"first": 0}
+    def add_process(self, proc):
+        self.__processes.append(proc)
 
-    def add_label(self, label, line):
-        self.labels[label] = line
+    def add_instruction(self, text):
+        self.add_process(Instruction(expr=text.strip()))
 
-    def get_label(self, label):
-        return self.labels[label]
+    def add_label(self, text):
+        self.add_process(Label(name=text))
+
+    def add_blank(self):
+        self.add_process(Blank())
 
     """Assembler"""
 
-    def assemble(self):
-        pass
+    def assemble(self, controller_text):
+        self.parse(controller_text)
+        for i, proc in enumerate(self.__processes):
+            print(i, proc)
 
     def parse(self, text):
         lines = text.split("\n")
-        pats = [("label", r"^(\d+):")]
-        for line, line_number in enumerate(lines):
-            for type, pat in pats:
-                res = re.match(pat, line)
-                if res == None:
+        line_number = 0
+        while line_number < len(lines):
+            line = lines[line_number]
+            for Proc in Procedure.All():
+                res = re.search(Proc.Pattern, line)
+                if not res:
                     continue
-                match type:
-                    case "label":
-                        self.add_label(res, line_number)
-        print(self.labels)
+                match Proc.__name__:
+                    case "Label":
+                        self.add_label(res.group())
+                    case "Instruction":
+                        self.add_instruction(res.group())
+                    case _:
+                        self.add_blank()
+                line_number += 1
+                break
 
     """Running"""
 

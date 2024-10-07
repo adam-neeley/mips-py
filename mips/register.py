@@ -1,17 +1,10 @@
 class Register:
+    "A class to represent a register."
+
     def __init__(self, name):
+        "Initialize name and contents of register."
         self.__name = name
         self.__contents = None
-
-    def dispatch(self, message, value=None):
-        print(f"{self.name} dispatch {message} {value}")
-        match (message):
-            case "get":
-                return self.__contents
-            case "set":
-                self.__contents = value
-            case _:
-                raise ValueError(f"Unknown message: {message}")
 
     @property
     def name(self):
@@ -19,8 +12,8 @@ class Register:
 
     @property
     def contents(self):
-        return self.dispatch("get")
+        return self.__contents
 
     @contents.setter
     def contents(self, value):
-        return self.dispatch("set", value)
+        self.__contents = value

@@ -9,10 +9,10 @@ from mips.console import Console
 class Machine:
     "Class to represent a machine."
 
-    def __init__(self):
+    def __init__(self, registers, operators=[]):
         self.__labels = []
         self.__registers = []
-        for name in Machine.RegisterNames:
+        for name in registers:
             self.add_register(name)
         self.__procedures = []
 
@@ -31,18 +31,6 @@ class Machine:
         return self.__procedures
 
     """Registers"""
-
-    RegisterNames = [
-        "zero",
-        "pc",
-        "flag",
-        "a0",
-        "a1",
-        "v0",
-        "v1",
-        "s0",
-        "sp",
-    ]
 
     def add_register(self, register_name):
         self.__registers.append(Register(register_name))
@@ -90,8 +78,11 @@ class Machine:
 
     """Assembler"""
 
-    def assemble(self, controller_text):
-        self.parse(controller_text)
+    def load(self, code):
+        self.code = code
+
+    def assemble(self):
+        self.parse(self.code)
 
     def parse(self, text):
         lines = text.strip().strip("\n").split("\n")

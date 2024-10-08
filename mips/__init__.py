@@ -1,4 +1,4 @@
-from mips.machine import Machine
+from mips.mips import MIPS
 
 
 def main():
@@ -12,9 +12,10 @@ def main():
         addi $s0 $s0 1
         j    loop
     """
-    machine = Machine()
-    machine.assemble(code)
-    machine.run()
+
+    MIPS.load(code)
+    MIPS.assemble()
+    MIPS.run()
 
 
 if __name__ == "__main__":

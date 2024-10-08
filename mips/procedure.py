@@ -1,4 +1,4 @@
-from mips.console import console
+from mips.console import Console
 import mips.operations as operations
 
 
@@ -13,8 +13,8 @@ class Procedure:
             yield from subclass.All()
             yield subclass
 
-    def proc(self, machine):
-        print("Not implemented")
+    def process(self, machine):
+        raise NotImplementedError("Procedure process not implemented.")
 
     @property
     def type(self):
@@ -31,7 +31,7 @@ class Label(Procedure):
         self.name = name.strip()
         self.line = line
 
-    def proc(self, machine):
+    def process(self, machine):
         pass
 
     def __repr__(self):
@@ -50,7 +50,7 @@ class Instruction(Procedure):
         if len(self.tokens) == 0:
             raise ValueError(f"Invalid Instruction expr: {expr}")
         self.op = self.tokens[0]
-        if self.op not in operations.Locals:
+        if self.op not in operations.Methods:
             raise ValueError(f"Op not found: {self.op}")
 
     def tokenize(self, expr):
@@ -61,7 +61,7 @@ class Instruction(Procedure):
             res.append(token.strip())
         return res
 
-    def proc(self, machine):
+    def process(self, machine):
         operations.run(machine, *self.tokens)
 
     def __repr__(self):
@@ -75,7 +75,7 @@ class Instruction(Procedure):
 class Blank(Procedure):
     Pattern = r"\s*"
 
-    def proc(self, machine):
+    def process(self, machine):
         pass
 
     def __repr__(self):

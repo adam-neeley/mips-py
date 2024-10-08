@@ -1,4 +1,4 @@
-from mips.console import console
+from mips.console import Console
 
 
 def syscall(m):
@@ -6,7 +6,7 @@ def syscall(m):
     a = m.get_value("$a0")
     match v:
         case 4:
-            console.log(a)
+            Console.log(a)
         case 10:
             exit()
 
@@ -15,12 +15,12 @@ def syscall(m):
 
 
 def movz(m, rd, rs, rt):
-    if rt == 0:
+    if m.get_value(rt) == 0:
         m.set_value(rd, rs)
 
 
 def movn(m, rd, rs, rt):
-    if rt != 0:
+    if m.get_value(rt) != 0:
         m.set_value(rd, rs)
 
 
@@ -72,20 +72,19 @@ def j(m, pa):
     m.set_value("$pc", a)
 
 
-"HELPERS"
+"Helpers"
 
-Locals = locals()
-
-
-def get(name):
-    if name in Locals.keys():
-        return Locals[name]
+Methods = locals()
 
 
-def run(m, name, *args):
-    # print(f"Running {name} {args}")
-    o = get(name)
-    if o:
-        o(m, *args)
+def get(method_name):
+    if method_name in Methods.keys():
+        return Methods[method_name]
+
+
+def run(machine, method_name, *args):
+    method = get(method_name)
+    if method:
+        method(machine, *args)
     else:
-        raise ValueError(f"Method not found: {name}")
+        raise ValueError(f"Method not found: {method_name}")

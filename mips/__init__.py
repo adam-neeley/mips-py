@@ -2,9 +2,7 @@ from mips.machine import Machine
 
 
 def main():
-    machine = Machine()
-    machine.assemble(
-        """
+    code = """
     main:
         li   $s0 0
         li   $v0 4
@@ -14,8 +12,9 @@ def main():
         addi $s0 $s0 1
         j    loop
     """
-    )
-    machine.start()
+    machine = Machine()
+    machine.assemble(code)
+    machine.run()
 
 
 if __name__ == "__main__":

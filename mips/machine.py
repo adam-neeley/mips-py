@@ -1,4 +1,5 @@
 import re
+import time
 
 from mips.stack import Stack
 from mips.register import Register
@@ -67,13 +68,13 @@ class Machine:
 
     def get_value(self, name):
         if name[0] == "$":
-            return self.get_register(name).contents
+            return int(self.get_register(name).contents)
         else:
-            return self.get_label(name).line
+            return int(self.get_label(name).line)
 
     def set_value(self, name, value):
         self.get_register(name).contents = value
-        return value
+        # return value
 
     def get_register(self, name):
         if name[0] == "$":
@@ -103,7 +104,6 @@ class Machine:
     def add_procedure(self, proc):
         proc.line = len(self.__procedures)
         self.__procedures.append(proc)
-        print(proc)
 
     """Assembler"""
 
@@ -135,10 +135,10 @@ class Machine:
     """Running"""
 
     def start(self):
-        pc = self.get_value("$pc")
-        while pc < len(self.procedures):
-            self.procedures[pc].proc(self)
-            pc += 1
+        while True:
+            self.procedures[self.get_value("$pc")].proc(self)
+            self.set_value("$pc", self.get_value("$pc") + 1)
+            time.sleep(0.1)
         print("done")
 
     def __repr__(self):

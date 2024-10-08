@@ -6,7 +6,7 @@ def syscall(m):
     a = m.get_value("$a0")
     match v:
         case 4:
-            console.log("SYSCALL:", a)
+            console.log(a)
         case 10:
             exit()
 
@@ -31,12 +31,12 @@ def li(m, rt, imm):
     "fake"
     # lui $at, 0x0003
     # ori $8, $at, 0xBF20
-    m.set_value(rt, imm)
+    m.set_value(rt, int(imm))
 
 
 def ori(m, rt, rs, imm):
-    s = m.get_register(rs)
-    m.set_value(rt, s & imm)
+    s = m.get_value(rs)
+    m.set_value(rt, s & int(imm))
 
 
 # lui
@@ -50,7 +50,7 @@ def ori(m, rt, rs, imm):
 
 def addi(m, rt, rs, imm):
     s = m.get_value(rs)
-    m.set_value(rt, s + imm)
+    m.set_value(rt, s + int(imm))
 
 
 def add(m, rd, rs, rt):
@@ -73,7 +73,7 @@ def la(m, rd, rs):
 
 def j(m, pa):
     a = m.get_value(pa)
-    m.set_value("$pc", a)
+    m.set_value("$pc", a + 1)
 
 
 "HELPERS"
@@ -87,7 +87,9 @@ def get(name):
 
 
 def run(m, name, *args):
-    print(f"Running {name} {args}")
+    # print(f"Running {name} {args}")
     o = get(name)
     if o:
         o(m, *args)
+    else:
+        raise ValueError(f"Method not found: {name}")

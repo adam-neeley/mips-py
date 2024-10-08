@@ -17,7 +17,6 @@ def main():
     """
     machine = Machine()
     machine.assemble(controller_text)
-    print(machine)
     machine.start()
 
 

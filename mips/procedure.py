@@ -61,12 +61,11 @@ class Label(Procedure):
     line: int
 
     def __init__(self, name, line):
-        print("LABEL: ", name, line)
         self.name = name.strip()
         self.line = line
 
     def proc(self, machine):
-        machine.set_value("$pc", self.line + 1)
+        pass
 
     def __repr__(self):
         return f"""
@@ -97,13 +96,9 @@ class Instruction(Procedure):
 
     def proc(self, machine):
         operations.run(machine, *self.tokens)
-        print(machine)
 
     def __repr__(self):
-        text = f"""
-        expr:   {self.expr.strip()}
-        tokens: {", ".join(self.tokens)}
-        """
+        text = f"tokens: {self.tokens}"
         res = ""
         for line in text.split("\n"):
             res += line.strip() + "\n"

@@ -1,35 +1,5 @@
-from enum import Enum
 from mips.console import console
 import mips.operations as operations
-from dataclasses import dataclass
-from abc import ABC
-from typing import Callable
-import re
-
-
-class Operation:
-    def __init__(self, name, arg_format=""):
-        self.name = name
-        self.arg_format = arg_format
-
-    def load_args(self, *args):
-        expect_num_args = arg_format.split(", ")
-        num_args = len(args)
-        if num_args != expect_num_args:
-            raise ValueError("Expected {expect_num_args} args but got {num_args}")
-        return args
-
-    def perform(self, machine, *args):
-        self.load_args(*args)
-
-    @staticmethod
-    def create(name, arg_format):
-        """
-        R: arg_format = "$rd, $rs, $rt"
-        I: arg_format = "$rt, $rs, IMM"
-        J: arg_format = "PSEUDO_ADDRESS"
-        """
-        return Operation(name, arg_format)
 
 
 class Procedure:
@@ -54,11 +24,8 @@ class Procedure:
         return self.type
 
 
-@dataclass
 class Label(Procedure):
     Pattern = r"\w+(?=:)"
-    name: str
-    line: int
 
     def __init__(self, name, line):
         self.name = name.strip()
@@ -105,15 +72,8 @@ class Instruction(Procedure):
         return res
 
 
-class InstrType(Enum):
-    Jump = 1
-    Register = 2
-    Immediate = 3
-
-
 class Blank(Procedure):
-    # Pattern = r"\s*"
-    Pattern = r".*"
+    Pattern = r"\s*"
 
     def proc(self, machine):
         pass

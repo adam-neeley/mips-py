@@ -63,10 +63,6 @@ def la(m, rd, rs):
     s = m.get_value(rs)
     m.set_value(rd, s)
 
-    # lui(m, "at", 4097)
-    # ori(m, "a0")
-    # m.set_value(rt, imm)
-
 
 "J Format"
 

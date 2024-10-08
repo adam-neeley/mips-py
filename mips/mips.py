@@ -4,7 +4,6 @@ MIPS = Machine(
     registers=[
         "zero",
         "pc",
-        "flag",
         "a0",
         "a1",
         "v0",

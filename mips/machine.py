@@ -7,14 +7,14 @@ from mips.console import Console
 
 
 class Machine:
-    "Class to represent a machine."
+    "Class to represent a machine with registers and operators."
 
     def __init__(self, registers, operators=[]):
         self.__labels = []
         self.__registers = []
+        self.__procedures = []
         for name in registers:
             self.add_register(name)
-        self.__procedures = []
 
     """Properties"""
 
@@ -60,23 +60,24 @@ class Machine:
     """Values"""
 
     def get_value(self, name):
+        "Return value of register or label."
         if name[0] == "$":
             return int(self.get_register(name).contents)
         else:
             return int(self.get_label(name).line)
 
     def set_value(self, name, value):
+        "Set value of register or label."
         if name[0] == "$":
             self.get_register(name).contents = value
         else:
             self.get_label(name).line = value
 
-    """Procedures"""
+    """Assembler"""
+    # TODO refactor
 
     def add_procedure(self, proc):
         self.__procedures.append(proc)
-
-    """Assembler"""
 
     def load(self, code):
         self.code = code
@@ -88,20 +89,22 @@ class Machine:
         lines = text.strip().strip("\n").split("\n")
         for line_num, line in enumerate(lines):
             for Proc in Procedure.All():
-                res = re.search(Proc.Pattern, line)
-                if not res:
+                found = re.search(Proc.Pattern, line)
+                if found:
+                    found = found.group()
+                else:
                     continue
                 proc = Blank()
                 match Proc.__name__:
                     case "Label":
-                        proc = Label(name=res.group(), line=line_num)
+                        proc = Label(name=found, line=line_num)
                         self.add_label(proc)
                     case "Instruction":
                         proc = Instruction(expr=line.strip())
                 self.add_procedure(proc)
                 break
 
-    """Running"""
+    """Run"""
 
     def run(self):
         while True:

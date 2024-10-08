@@ -53,8 +53,8 @@ class Table:
 
 class Console:
 
-    def log(self, msg):
-        print(msg)
+    def log(self, *args):
+        print(*args)
 
     def table(self, data):
         self.log(Table(data))

@@ -11,9 +11,10 @@ class Machine:
 
     def __init__(self):
         self.init_stack()
+        self.init_labels()
         self.init_registers()
         self.init_operators()
-        self.init_processes()
+        self.init_procedures()
 
     """Stack"""
 
@@ -30,47 +31,79 @@ class Machine:
         "a1",
         "v0",
         "v1",
+        "s0",
         "sp",
     ]
 
-    @property
-    def registers(self):
-        return self.__registers
+    """Init"""
+
+    def init_labels(self):
+        self.__labels = []
 
     def init_registers(self):
         self.__registers = []
         for name in Machine.RegisterNames:
             self.add_register(name)
 
+    @property
+    def labels(self):
+        return self.__labels
+
+    @property
+    def registers(self):
+        return self.__registers
+
+    def add_label(self, label):
+        self.__labels.append(label)
+
+    def get_label(self, name):
+        for i, l in enumerate(self.labels):
+            if l.name == name:
+                return self.labels[i]
+        raise ValueError(f"Label not found: {name}")
+
     def add_register(self, register_name):
         self.__registers.append(Register(register_name))
+
+    def get_value(self, name):
+        if name[0] == "$":
+            return self.get_register(name).contents
+        else:
+            return self.get_label(name).line
+
+    def set_value(self, name, value):
+        self.get_register(name).contents = value
+        return value
+
+    def get_register(self, name):
+        if name[0] == "$":
+            name = name[1:]
+        else:
+            raise ValueError(f"Must start with $: {name}")
+
+        for i, r in enumerate(self.registers):
+            if r.name == name:
+                return self.registers[i]
+        raise ValueError(f"Register not found: {name}")
 
     """Operators"""
 
     def init_operators(self):
         self.operators = []
 
-    """Processes"""
+    """Procedures"""
 
     @property
-    def processes(self):
-        return self.__processes
+    def procedures(self):
+        return self.__procedures
 
-    def init_processes(self):
-        self.__processes = []
+    def init_procedures(self):
+        self.__procedures = []
 
-    def add_process(self, proc):
-        proc.line = len(self.__processes)
-        self.__processes.append(proc)
-
-    def add_instruction(self, text):
-        self.add_process(Instruction(expr=text.strip()))
-
-    def add_label(self, text):
-        self.add_process(Label(name=text))
-
-    def add_blank(self):
-        self.add_process(Blank())
+    def add_procedure(self, proc):
+        proc.line = len(self.__procedures)
+        self.__procedures.append(proc)
+        print(proc)
 
     """Assembler"""
 
@@ -78,7 +111,7 @@ class Machine:
         self.parse(controller_text)
 
     def parse(self, text):
-        lines = text.split("\n")
+        lines = text.strip().strip("\n").split("\n")
         line_number = 0
         while line_number < len(lines):
             line = lines[line_number]
@@ -86,35 +119,34 @@ class Machine:
                 res = re.search(Proc.Pattern, line)
                 if not res:
                     continue
+                proc = Blank()
                 match Proc.__name__:
                     case "Label":
-                        self.add_label(res.group())
+                        proc = Label(name=res.group(), line=line_number)
+                        self.add_label(proc)
                     case "Instruction":
-                        self.add_instruction(res.group())
-                    case _:
-                        self.add_blank()
+                        proc = Instruction(
+                            expr=line.strip()
+                        )  # TODO add line=line_number
                 line_number += 1
+                self.add_procedure(proc)
                 break
 
     """Running"""
 
     def start(self):
-        self.__registers["pc"].contents = self.instruction_sequence
-        self.execute()
-
-    def execute(self):
-        instructions = self.__registers["pc"].contents
-        if instructions == None:
-            print("done")
-
-    def install_instruction_sequence(self):
-        self.__registers["pc"].contents = self.instruction_sequence
-        self.execute()
+        pc = self.get_value("$pc")
+        while pc < len(self.procedures):
+            self.procedures[pc].proc(self)
+            pc += 1
+        print("done")
 
     def __repr__(self):
         console.log("Machine")
+        console.log("Labels")
+        console.table([[i, l.name, l.line] for i, l in enumerate(self.labels)])
         console.log("Registers")
         console.table([[i, r.name, r.contents] for i, r in enumerate(self.registers)])
         console.log("Procedures")
-        console.table([[l, p.type, p] for l, p in enumerate(self.processes)])
+        console.table([[l, p.type, p] for l, p in enumerate(self.procedures)])
         return ""

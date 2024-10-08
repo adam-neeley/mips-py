@@ -69,7 +69,7 @@ def la(m, rd, rs):
 
 def j(m, pa):
     a = m.get_value(pa)
-    m.set_value("$pc", a + 1)
+    m.set_value("$pc", a)
 
 
 "HELPERS"

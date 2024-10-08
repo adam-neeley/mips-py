@@ -108,6 +108,8 @@ class Machine:
     """Assembler"""
 
     def assemble(self, controller_text):
+        console.log("Assembling...")
+        console.log(controller_text)
         self.parse(controller_text)
 
     def parse(self, text):

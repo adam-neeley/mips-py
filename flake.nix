@@ -1,5 +1,5 @@
 {
-  description = "A basic flake using pyproject.toml project metadata";
+  description = "MIPS Simulator in Python";
 
   inputs.nixpkgs.url = "nixpkgs/nixos-24.05";
   inputs.pyproject-nix.url = "github:nix-community/pyproject.nix";
